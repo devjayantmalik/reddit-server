@@ -41,9 +41,9 @@ const main = async () => {
   apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(__port__, () => {
-    logger.info("=====================================================");
-    logger.info(`🛡 Server started at: http://localhost:${__port__} 🛡`);
-    logger.info("=====================================================");
+    console.log("=====================================================");
+    console.log(`🛡 Server started at: http://localhost:${__port__} 🛡`);
+    console.log("=====================================================");
   });
 };
 
