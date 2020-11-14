@@ -10,9 +10,12 @@
     "build": "tsc"
   },
   "dependencies": {
+    "@types/joi": "^14.3.4",
     "apollo-server-express": "^2.18.2",
+    "argon2": "^0.27.0",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
+    "joi": "^17.3.0",
     "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "type-graphql": "^1.1.1",
