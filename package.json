@@ -1,0 +1,29 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A Reddit clone server.",
+  "main": "dist/index.js",
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "nodemon",
+    "watch": "tsc -w",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.18.2",
+    "express": "^4.17.1",
+    "express-session": "^1.17.1",
+    "morgan": "^1.10.0",
+    "typeorm": "^0.2.28",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.8",
+    "@types/express-session": "^1.17.2",
+    "@types/morgan": "^1.9.2",
+    "@types/winston": "^2.4.4"
+  },
+  "keywords": [],
+  "author": "Jayant Malik",
+  "license": "ISC"
+}
