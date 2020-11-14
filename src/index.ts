@@ -5,9 +5,13 @@ import ormconfig from "./ormconfig";
 import { logger } from "./tools/logger";
 import cors from "cors";
 import session from "express-session";
+import { ApolloServer } from "apollo-server-express";
+import { buildSchema } from "type-graphql";
+import { UserResolver } from "./resolvers/user";
+import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
 
 const main = async () => {
-  const conn = await connectDb(ormconfig);
+  await connectDb(ormconfig);
 
   const app = express();
   app.use(
@@ -25,6 +29,16 @@ const main = async () => {
     })
   );
   app.use(cors({ origin: "*", credentials: true }));
+
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [UserResolver],
+      validate: false
+    }),
+    context: ({ req, res }): ExpressContext => ({ req, res })
+  });
+
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(__port__, () => {
     logger.info("=====================================================");
