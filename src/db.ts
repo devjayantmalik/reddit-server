@@ -1,10 +1,8 @@
 import { Connection, ConnectionOptions, createConnection } from "typeorm";
 
 let __connection: Connection;
-export const connectDb = async (
-  opts: ConnectionOptions
-): Promise<Connection> => {
-  __connection = await createConnection({ ...opts, entities: [] });
+export const connectDb = async (opts: ConnectionOptions): Promise<Connection> => {
+  __connection = await createConnection(opts);
   return __connection;
 };
 

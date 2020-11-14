@@ -6,5 +6,6 @@ export default {
   username: "test",
   password: "password",
   synchronize: true,
-  logging: false
+  logging: true,
+  entities: [__dirname + "/entities/*"]
 } as ConnectionOptions;
