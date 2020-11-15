@@ -20,6 +20,14 @@ export class ArticleEntity {
   @ManyToOne(() => UserEntity, (usr) => usr.articles, { cascade: true })
   user?: UserEntity;
 
+  @Field()
+  @Column({ default: false })
+  isPublic?: boolean;
+
+  @Field()
+  @Column({ default: false })
+  isPublished?: boolean;
+
   @Field(() => String)
   @CreateDateColumn()
   createdAt?: Date;
