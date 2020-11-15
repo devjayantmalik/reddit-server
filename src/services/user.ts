@@ -34,7 +34,7 @@ export const signin_user = async (email: string, password: string): Promise<User
   return user;
 };
 
-export const signup_user = async (user: UserEntity) => {
+export const signup_user = async (user: UserEntity): Promise<UserEntity> => {
   const { error: invalidUserError, value: validUser } = is_valid_user(user);
 
   if (invalidUserError) {
@@ -56,7 +56,7 @@ export const signup_user = async (user: UserEntity) => {
   return await getRepository(UserEntity).save(newUser);
 };
 
-export const reset_password = async (email: string, password: string) => {
+export const reset_password = async (email: string, password: string): Promise<Boolean> => {
   const isValidEmail = is_valid_email(email);
 
   if (!isValidEmail) {
@@ -73,4 +73,5 @@ export const reset_password = async (email: string, password: string) => {
   user.password = await argon2.hash(password);
 
   await getRepository(UserEntity).save(user);
+  return true;
 };

@@ -7,8 +7,9 @@ import cors from "cors";
 import session from "express-session";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
-import { UserResolver } from "./resolvers/user";
+import { UserResolver } from "./graphql/resolvers/user";
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
+import { IUser } from "./interfaces/IUser";
 
 const main = async () => {
   await connectDb(ormconfig);
@@ -52,3 +53,12 @@ main().catch((err) => {
   logger.error("🔥 Main Process Error Occured: %o", err);
   process.exit(1);
 });
+
+// Use this to add fields to express session object.
+// and to get auto completion.
+declare module "express-session" {
+  export interface Session {
+    email?: string;
+    user?: IUser;
+  }
+}
