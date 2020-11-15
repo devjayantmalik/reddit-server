@@ -6,6 +6,8 @@ import {
   check_article_exists,
   delete_article,
   get_user_articles,
+  make_article_public,
+  publish_article,
   update_article
 } from "../../services/article";
 import { ArticleDoesNotExistError } from "../../utils/errors";
@@ -51,7 +53,7 @@ export class ArticleResolver {
     }
   }
 
-  @UseMiddleware(isAuthenticated, attachCurrentUser, isArticleUser)
+  @UseMiddleware(isAuthenticated, isArticleUser)
   @Mutation(() => ArticleResponse)
   async updateArticle(
     @Arg("id", () => ID) id: string,
@@ -65,12 +67,34 @@ export class ArticleResolver {
     }
   }
 
-  @UseMiddleware(isAuthenticated, attachCurrentUser, isArticleUser)
+  @UseMiddleware(isAuthenticated, isArticleUser)
   @Mutation(() => ArticleResponse)
   async deleteArticle(@Arg("id", () => ID) id: string): Promise<ArticleResponse> {
     try {
       const deletedArticle = await delete_article(id);
       return { data: deletedArticle };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  @UseMiddleware(isAuthenticated, isArticleUser)
+  @Mutation(() => ArticleResponse)
+  async publishArticle(@Arg("id", () => ID) id: string): Promise<ArticleResponse> {
+    try {
+      const article = await publish_article(id);
+      return { data: article };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  @UseMiddleware(isAuthenticated, isArticleUser)
+  @Mutation(() => ArticleResponse)
+  async markArticlePublic(@Arg("id", () => ID) id: string): Promise<ArticleResponse> {
+    try {
+      const article = await make_article_public(id);
+      return { data: article };
     } catch (err) {
       return { error: err.message };
     }

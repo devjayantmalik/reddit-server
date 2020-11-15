@@ -7,6 +7,8 @@ export const INVALID_ARTICLE_DETAILS = "InvalidArticleDetails";
 export const ARTICLE_DOES_NOT_EXISTS = "ArticleDoesNotExists";
 export const NO_ARTICLES_FOUND = "NoArticlesFound";
 export const MIDDLEWARE_ERROR = "MiddlewareError";
+export const ARTICLE_ALREADY_PUBLIC = "ArticleAlreadyPublic";
+export const ARTICLE_ALREADY_PUBLISHED = "ArticleAlreadyPublished";
 
 export class CustomError extends Error implements ICustomError {
   name: string = "ServerError";
@@ -47,3 +49,9 @@ export const NoArticlesFoundError = (): CustomError =>
   new CustomError(NO_ARTICLES_FOUND, "No articles found. Please create a new article to see the results.");
 
 export const MiddlewareError = (message: string): CustomError => new CustomError(MIDDLEWARE_ERROR, message);
+
+export const ArticleAlreadyPublicError = (): CustomError =>
+  new CustomError(ARTICLE_ALREADY_PUBLIC, "Article is already publically available.");
+
+export const ArticleAlreadyPublishedError = (): CustomError =>
+  new CustomError(ARTICLE_ALREADY_PUBLISHED, "Article is already published.");

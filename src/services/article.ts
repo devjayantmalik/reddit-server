@@ -3,7 +3,13 @@ import { ArticleEntity } from "../entities/Article";
 import { UserEntity } from "../entities/User";
 import { IArticle } from "../interfaces/IArticle";
 import { is_valid_article } from "../tools/validators/article";
-import { ArticleDoesNotExistError, InvalidCredentialsError, NoArticlesFoundError } from "../utils/errors";
+import {
+  ArticleAlreadyPublicError,
+  ArticleAlreadyPublishedError,
+  ArticleDoesNotExistError,
+  InvalidCredentialsError,
+  NoArticlesFoundError
+} from "../utils/errors";
 
 export const check_article_exists = async (id: string): Promise<ArticleEntity | undefined> => {
   return await getRepository(ArticleEntity).findOne(id);
@@ -62,4 +68,26 @@ export const get_user_articles = async (user: UserEntity) => {
     throw NoArticlesFoundError();
   }
   return articles;
+};
+
+export const publish_article = async (articleId: string): Promise<ArticleEntity> => {
+  const existingArticle = await check_article_exists(articleId);
+  if (!existingArticle) throw ArticleDoesNotExistError();
+
+  if (existingArticle.isPublished) throw ArticleAlreadyPublishedError();
+
+  await getRepository(ArticleEntity).update({ id: parseInt(articleId) }, { isPublished: true });
+
+  return { ...existingArticle, isPublished: true };
+};
+
+export const make_article_public = async (articleId: string) => {
+  const existingArticle = await check_article_exists(articleId);
+  if (!existingArticle) throw ArticleDoesNotExistError();
+
+  if (existingArticle.isPublic) throw ArticleAlreadyPublicError();
+
+  await getRepository(ArticleEntity).update({ id: parseInt(articleId) }, { isPublic: true });
+
+  return { ...existingArticle, isPublic: true };
 };
