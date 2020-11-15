@@ -3,7 +3,7 @@ import { getRepository } from "typeorm";
 import { UserEntity } from "../entities/User";
 import { IUser } from "../interfaces/IUser";
 import { logger } from "../tools/logger";
-import { is_valid_email, is_valid_user } from "../tools/validators/user";
+import { is_valid_email, is_valid_password, is_valid_user } from "../tools/validators/user";
 import { DuplicateAccountError, InvalidCredentialsError, InvalidUserDetailsError } from "../utils/errors";
 
 export const check_user_exists = async (email: string): Promise<UserEntity | undefined> => {
@@ -61,6 +61,12 @@ export const reset_password = async (email: string, password: string): Promise<B
 
   if (!isValidEmail) {
     logger.error("Provided email doesn't match valid email format: %s", email);
+    throw InvalidCredentialsError();
+  }
+
+  const isValidPassword = is_valid_password(password);
+  if (!isValidPassword) {
+    logger.error("Provided password doesn't match valid password criteria: %s", password);
     throw InvalidCredentialsError();
   }
 

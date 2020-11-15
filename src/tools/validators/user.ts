@@ -26,6 +26,11 @@ export const is_valid_email = (email: string): boolean => {
   return error ? false : true;
 };
 
+export const is_valid_password = (password: string): boolean => {
+  const { error } = Joi.string().min(6).max(20).required().trim().validate(password);
+  return error ? false : true;
+};
+
 const humanizeError = (error: Joi.ValidationError): ICustomError => {
   return {
     name: INVALID_USER_DETAILS,
