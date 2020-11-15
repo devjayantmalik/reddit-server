@@ -1,13 +1,5 @@
 import { Field, Int, ObjectType } from "type-graphql";
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ArticleEntity } from "./Article";
 
 @ObjectType()
@@ -32,8 +24,8 @@ export class UserEntity {
   @Column({ type: "text" })
   password!: string;
 
-  @OneToMany(() => ArticleEntity, (art) => art.user, { cascade: true })
-  articles!: ArticleEntity[];
+  @OneToMany(() => ArticleEntity, (art) => art.user)
+  articles?: ArticleEntity[];
 
   @Field(() => String)
   @CreateDateColumn()

@@ -3,7 +3,7 @@ import { ArticleEntity } from "../entities/Article";
 import { UserEntity } from "../entities/User";
 import { IArticle } from "../interfaces/IArticle";
 import { is_valid_article } from "../tools/validators/article";
-import { ArticleDoesNotExistError, NoArticlesFound } from "../utils/errors";
+import { ArticleDoesNotExistError, InvalidCredentialsError, NoArticlesFoundError } from "../utils/errors";
 
 export const check_article_exists = async (id: string): Promise<ArticleEntity | undefined> => {
   return await getRepository(ArticleEntity).findOne(id);
@@ -16,12 +16,22 @@ export const add_article = async (article: IArticle, user: UserEntity): Promise<
     throw invalidArticleError;
   }
 
-  return await getRepository(ArticleEntity).save(validArticle as IArticle);
+  return await getRepository(ArticleEntity).save({ ...(validArticle as IArticle), user: user });
 };
 
 // TODO: Make sure to implement this function. It checks if the article belongs to a user with provided email.
-export const check_is_user_article = async (email: string, articleId): Promise<boolean> => {
-  throw new Error("check is user article not implemented yet.");
+export const check_is_user_article = async (email: string, articleId: string): Promise<boolean> => {
+  const user = await getRepository(UserEntity).findOne({ where: { email }, relations: ["articles"] });
+
+  if (!user) throw InvalidCredentialsError();
+
+  if (!user.articles) throw NoArticlesFoundError();
+
+  const isUserArticle = user.articles.find((article) => article.id === parseInt(articleId));
+
+  if (!isUserArticle) throw ArticleDoesNotExistError();
+
+  return true;
 };
 
 export const update_article = async (id: string, article: Partial<IArticle>): Promise<ArticleEntity> => {
@@ -49,7 +59,7 @@ export const delete_article = async (id: string): Promise<ArticleEntity> => {
 export const get_user_articles = async (user: UserEntity) => {
   const articles = await getRepository(ArticleEntity).find({ where: { user } });
   if (!articles.length) {
-    throw NoArticlesFound();
+    throw NoArticlesFoundError();
   }
   return articles;
 };

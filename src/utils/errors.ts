@@ -43,7 +43,7 @@ export const ArticleDoesNotExistError = (): CustomError =>
     "Your requested article is missing on our servers. You might have provided invalid details, or it was deleted for some reasons."
   );
 
-export const NoArticlesFound = (): CustomError =>
+export const NoArticlesFoundError = (): CustomError =>
   new CustomError(NO_ARTICLES_FOUND, "No articles found. Please create a new article to see the results.");
 
 export const MiddlewareError = (message: string): CustomError => new CustomError(MIDDLEWARE_ERROR, message);
