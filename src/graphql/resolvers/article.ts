@@ -1,5 +1,4 @@
-import { Arg, Field, ID, Mutation, ObjectType, Query } from "type-graphql";
-import { ArticleEntity } from "../../entities/Article";
+import { Arg, ID, Mutation, Query } from "type-graphql";
 import {
   add_article,
   check_article_exists,
@@ -9,24 +8,8 @@ import {
 } from "../../services/article";
 import { ArticleDoesNotExistError } from "../../utils/errors";
 import { ArticleInput, ArticleUpdateInput } from "../inputs/ArticleInput";
-
-@ObjectType()
-export class ArticleResponse {
-  @Field({ nullable: true })
-  error?: string;
-
-  @Field(() => ArticleEntity, { nullable: true })
-  data?: ArticleEntity;
-}
-
-@ObjectType()
-export class ArticlesResponse {
-  @Field({ nullable: true })
-  error?: string;
-
-  @Field(() => [ArticleEntity], { nullable: true })
-  data?: ArticleEntity[];
-}
+import { ArticleResponse } from "../responses/ArticleResponse";
+import { ArticlesResponse } from "../responses/ArticlesResponse";
 
 export class ArticleResolver {
   @Query(() => ArticleResponse)
