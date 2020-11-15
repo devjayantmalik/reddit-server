@@ -9,7 +9,7 @@ export class ArticleEntity {
   title!: string;
 
   @Column({ type: "text" })
-  content!: string;
+  markdown!: string;
 
   @CreateDateColumn()
   createdAt?: Date;
