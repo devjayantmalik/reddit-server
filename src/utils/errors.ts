@@ -6,6 +6,7 @@ export const INVALID_USER_DETAILS = "InvalidUserDetalisError";
 export const INVALID_ARTICLE_DETAILS = "InvalidArticleDetails";
 export const ARTICLE_DOES_NOT_EXISTS = "ArticleDoesNotExists";
 export const NO_ARTICLES_FOUND = "NoArticlesFound";
+export const MIDDLEWARE_ERROR = "MiddlewareError";
 
 export class CustomError extends Error implements ICustomError {
   name: string = "ServerError";
@@ -44,3 +45,5 @@ export const ArticleDoesNotExistError = (): CustomError =>
 
 export const NoArticlesFound = (): CustomError =>
   new CustomError(NO_ARTICLES_FOUND, "No articles found. Please create a new article to see the results.");
+
+export const MiddlewareError = (message: string): CustomError => new CustomError(MIDDLEWARE_ERROR, message);
