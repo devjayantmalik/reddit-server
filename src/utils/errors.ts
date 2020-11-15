@@ -3,6 +3,8 @@ import { ICustomError } from "../interfaces/ICustomError";
 export const INVALID_CREDENTIALS = "InvalidCredentialsError";
 export const DUPLICATE_ACCOUNT = "DuplicateAccountError";
 export const INVALID_USER_DETAILS = "InvalidUserDetalisError";
+export const INVALID_ARTICLE_DETAILS = "InvalidArticleDetails";
+export const ARTICLE_DOES_NOT_EXISTS = "ArticleDoesNotExists";
 
 export class CustomError extends Error implements ICustomError {
   name: string = "ServerError";
@@ -29,3 +31,12 @@ export const DuplicateAccountError = (): CustomError =>
   );
 
 export const InvalidUserDetailsError = (message: string): CustomError => new CustomError(INVALID_USER_DETAILS, message);
+
+export const InvalidArticleDetailsError = (message: string): CustomError =>
+  new CustomError(INVALID_ARTICLE_DETAILS, message);
+
+export const ArticleDoesNotExist = (): CustomError =>
+  new CustomError(
+    ARTICLE_DOES_NOT_EXISTS,
+    "Your requested article is missing on our servers. You might have provided invalid details, our it was deleted for some reasons."
+  );
