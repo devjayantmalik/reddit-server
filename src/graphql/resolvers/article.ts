@@ -1,4 +1,7 @@
-import { Arg, ID, Mutation, Query } from "type-graphql";
+import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
+import { Arg, ID, MiddlewareInterface, Mutation, Query, UseMiddleware } from "type-graphql";
+import { Middleware, MiddlewareFn } from "type-graphql/dist/interfaces/Middleware";
+import { MiddlewareMetadata } from "type-graphql/dist/metadata/definitions";
 import {
   add_article,
   check_article_exists,
@@ -6,12 +9,14 @@ import {
   get_user_articles,
   update_article
 } from "../../services/article";
-import { ArticleDoesNotExistError } from "../../utils/errors";
+import { ArticleDoesNotExistError, InvalidCredentialsError } from "../../utils/errors";
 import { ArticleInput, ArticleUpdateInput } from "../inputs/ArticleInput";
+import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { ArticleResponse } from "../responses/ArticleResponse";
 import { ArticlesResponse } from "../responses/ArticlesResponse";
 
 export class ArticleResolver {
+  @UseMiddleware(isAuthenticated)
   @Query(() => ArticleResponse)
   async article(@Arg("id", () => ID) id: string): Promise<ArticleResponse> {
     try {
