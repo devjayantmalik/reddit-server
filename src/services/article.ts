@@ -91,3 +91,17 @@ export const make_article_public = async (articleId: string) => {
 
   return { ...existingArticle, isPublic: true };
 };
+
+export const get_public_articles = async (cursor: string, limit: number): Promise<ArticleEntity[]> => {
+  limit = Math.min(50, Number(limit)) || 50;
+  const results = await getRepository(ArticleEntity)
+    .createQueryBuilder()
+    .where(
+      `${cursor ? "createdAt <= :cursor and isPublic = 1 and isPublished = 1" : "isPublic = 1 and isPublished = 1"}`,
+      cursor ? { cursor: new Date(Number(cursor)) } : {}
+    )
+    .addOrderBy("createdAt", "DESC")
+    .take(limit)
+    .getMany();
+  return results;
+};

@@ -1,16 +1,18 @@
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
-import { Arg, Ctx, ID, Mutation, Query, UseMiddleware } from "type-graphql";
+import { Arg, Ctx, ID, Int, Mutation, Query, UseMiddleware } from "type-graphql";
 import { UserEntity } from "../../entities/User";
 import {
   add_article,
   check_article_exists,
   delete_article,
+  get_public_articles,
   get_user_articles,
   make_article_public,
   publish_article,
   update_article
 } from "../../services/article";
-import { ArticleDoesNotExistError } from "../../utils/errors";
+import { check_user_exists } from "../../services/user";
+import { ArticleDoesNotExistError, InvalidCredentialsError } from "../../utils/errors";
 import { ArticleInput, ArticleUpdateInput } from "../inputs/ArticleInput";
 import { attachCurrentUser } from "../middlewares/attachCurrentUser";
 import { isArticleUser } from "../middlewares/isArticleUser";
@@ -18,14 +20,45 @@ import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { ArticleResponse } from "../responses/ArticleResponse";
 import { ArticlesResponse } from "../responses/ArticlesResponse";
 
+/**
+ * Route: /article : Returns a specific article with provided id. Supports both authenticated user and public article.
+ * Route: /userArticles: Returns articles for logged in user.
+ * Route: /addArticle: Adds a new article (Authentication Required)
+ * Route: /updateArticle: Updates an existing article (Authentication Required)
+ * Route: /deleteArticle: Deletes an article (Authentication Required)
+ */
+
 export class ArticleResolver {
-  @UseMiddleware(isAuthenticated)
   @Query(() => ArticleResponse)
-  async article(@Arg("id", () => ID) id: string): Promise<ArticleResponse> {
+  async article(@Arg("id", () => ID) id: string, @Ctx() { req }: ExpressContext): Promise<ArticleResponse> {
     try {
       const article = await check_article_exists(id);
       if (!article) throw ArticleDoesNotExistError();
+
+      if (article.isPublic && article.isPublished) {
+        return { data: article };
+      }
+
+      if (!req.session.email) {
+        throw InvalidCredentialsError();
+      }
+      const user = await check_user_exists(req.session.email);
+      if (!user) throw InvalidCredentialsError();
+
       return { data: article };
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  @Query(() => ArticlesResponse)
+  async publicArticles(
+    @Arg("cursor", { nullable: true }) cursor: string,
+    @Arg("limit", () => Int, { nullable: true }) limit: number
+  ): Promise<ArticlesResponse> {
+    try {
+      const articles = await get_public_articles(cursor, limit);
+      return { data: articles };
     } catch (err) {
       return { error: err.message };
     }
