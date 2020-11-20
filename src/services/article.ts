@@ -12,7 +12,7 @@ import {
   NoArticlesFoundError
 } from "../utils/errors";
 
-export const check_article_exists = async (id: string): Promise<ArticleEntity | undefined> => {
+export const check_article_exists = async (id: string | number): Promise<ArticleEntity | undefined> => {
   return await getRepository(ArticleEntity).findOne(id);
 };
 
@@ -25,39 +25,39 @@ export const add_article = async (article: IArticle, user: IUser): Promise<Artic
   return await getRepository(ArticleEntity).save({ ...(validArticle as IArticle), user: user });
 };
 
-export const check_is_user_article = async (email: string, articleId: string): Promise<boolean> => {
+export const check_is_user_article = async (email: string, articleId: string | number): Promise<boolean> => {
   const user = await getRepository(UserEntity).findOne({ where: { email }, relations: ["articles"] });
 
   if (!user) throw InvalidCredentialsError();
 
   if (!user.articles) throw NoArticlesFoundError();
 
-  const isUserArticle = user.articles.find((article) => article.id === parseInt(articleId));
+  const isUserArticle = user.articles.find((article) => article.id === parseInt(articleId as string));
 
   if (!isUserArticle) throw ArticleDoesNotExistError();
 
   return true;
 };
 
-export const update_article = async (id: string, article: Partial<IArticle>): Promise<ArticleEntity> => {
+export const update_article = async (id: string | number, article: Partial<IArticle>): Promise<ArticleEntity> => {
   const existingArticle = await check_article_exists(id);
 
   if (!existingArticle) {
     throw ArticleDoesNotExistError();
   }
 
-  await getRepository(ArticleEntity).update({ id: parseInt(id) }, article);
+  await getRepository(ArticleEntity).update({ id: parseInt(id as string) }, article);
   return { ...existingArticle, ...article };
 };
 
-export const delete_article = async (id: string): Promise<ArticleEntity> => {
+export const delete_article = async (id: string | number): Promise<ArticleEntity> => {
   const existingArticle = await check_article_exists(id);
 
   if (!existingArticle) {
     throw ArticleDoesNotExistError();
   }
 
-  await getRepository(ArticleEntity).delete({ id: parseInt(id) });
+  await getRepository(ArticleEntity).delete({ id: parseInt(id as string) });
   return existingArticle;
 };
 
@@ -69,24 +69,24 @@ export const get_user_articles = async (user: UserEntity) => {
   return articles;
 };
 
-export const publish_article = async (articleId: string): Promise<ArticleEntity> => {
+export const publish_article = async (articleId: string | number): Promise<ArticleEntity> => {
   const existingArticle = await check_article_exists(articleId);
   if (!existingArticle) throw ArticleDoesNotExistError();
 
   if (existingArticle.isPublished) throw ArticleAlreadyPublishedError();
 
-  await getRepository(ArticleEntity).update({ id: parseInt(articleId) }, { isPublished: true });
+  await getRepository(ArticleEntity).update({ id: parseInt(articleId as string) }, { isPublished: true });
 
   return { ...existingArticle, isPublished: true };
 };
 
-export const make_article_public = async (articleId: string) => {
+export const make_article_public = async (articleId: string | number) => {
   const existingArticle = await check_article_exists(articleId);
   if (!existingArticle) throw ArticleDoesNotExistError();
 
   if (existingArticle.isPublic) throw ArticleAlreadyPublicError();
 
-  await getRepository(ArticleEntity).update({ id: parseInt(articleId) }, { isPublic: true });
+  await getRepository(ArticleEntity).update({ id: parseInt(articleId as string) }, { isPublic: true });
 
   return { ...existingArticle, isPublic: true };
 };
