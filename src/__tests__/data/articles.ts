@@ -3,7 +3,8 @@ import { ArticleEntity } from "../../entities/Article";
 /**
  * Each user has 10 articles.
  * First 5 articles are public and published
- * Last 5 articles are private and published
+ * Last 4 articles are private and published
+ * Last article is private and unpublished
  */
 
 export const test_articles_1: ArticleEntity[] = [
@@ -75,7 +76,7 @@ export const test_articles_1: ArticleEntity[] = [
     title: "Test Article #10",
     markdown: "Test Content",
     isPublic: false,
-    isPublished: true
+    isPublished: false
   }
 ];
 

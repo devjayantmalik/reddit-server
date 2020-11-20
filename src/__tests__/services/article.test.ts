@@ -1,5 +1,16 @@
 import { IUser } from "../../interfaces/IUser";
-import { add_article, check_is_user_article } from "../../services/article";
+import {
+  add_article,
+  check_article_exists,
+  check_is_user_article,
+  delete_article,
+  get_public_articles,
+  get_user_articles,
+  make_article_public,
+  publish_article,
+  update_article
+} from "../../services/article";
+import { test_articles_1, test_articles_2 } from "../data/articles";
 import { test_users } from "../data/users";
 import { test_connection } from "../setup";
 
@@ -36,37 +47,137 @@ describe("Article Service Success Cases", () => {
     expect(exists).toBeTruthy();
   });
 
-  // it("should update article with provided details.", async () => {});
+  it("should update article with provided details.", async () => {
+    const updated = await update_article(`${test_articles_1[0].id}`, { title: "Updated Title" });
 
-  // it("should delete article if exists.", async () => {});
+    expect(updated).toBeDefined();
+    expect(updated.title).toBe("Updated Title");
+  });
 
-  // it("should return user articles.", async () => {});
+  it("should delete article if exists.", async () => {
+    const deleted = await delete_article(`${test_articles_1[0].id}`);
+    expect(deleted).toBeDefined();
+    expect(deleted.title).toBe(test_articles_1[0].title);
+    expect(deleted.markdown).toBe(test_articles_1[0].markdown);
+  });
 
-  // it("should mark article as published.", async () => {});
+  it("should return user articles.", async () => {
+    const articles = await get_user_articles(user_1);
 
-  // it("should mark article as public.", async () => {});
+    expect(articles.length).toBeDefined();
+    expect(articles.length).toBeGreaterThan(0);
+  });
 
-  // it("should return public articles", async () => {});
+  it("should mark article as published.", async () => {
+    const published = await publish_article(`${test_articles_1[9].id}`);
+
+    expect(published).toBeDefined();
+    expect(published.isPublished).toBeTruthy();
+  });
+
+  it("should mark article as public.", async () => {
+    const article = await make_article_public(`${test_articles_1[6].id}`);
+    expect(article).toBeDefined();
+    expect(article.isPublic).toBe(true);
+  });
+
+  it("should return public articles", async () => {
+    const articles = await get_public_articles();
+
+    expect(articles.length).toBeDefined();
+    expect(articles.length).toBeGreaterThan(0);
+  });
 });
 
-// describe("Article Service Failure Cases", () => {
-//   //   beforeAll(async () => {
-//   //     await reset_db();
-//   //   });
+describe("Article Service Failure Cases", () => {
+  beforeAll(async () => {
+    await test_connection.create();
+  });
 
-//   it("should throw error for non-existing article", async () => {});
+  afterAll(async () => {
+    await test_connection.close();
+  });
 
-//   it("should fail to add article with blank object", async () => {});
+  beforeEach(async () => {
+    await test_connection.clear();
+    await test_connection.insert_sample_data();
+  });
 
-//   it("should fail to check article for unrelated article id and email.", async () => {});
+  it("should return undefined for non-existing article", async () => {
+    const article = await check_article_exists(`${1000}`);
+    expect(article).toBeUndefined();
+  });
 
-//   it("should fail to update for non-existing article id.", async () => {});
+  it("should fail to add article with blank object", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await add_article({} as any, user_1);
+    } catch (err) {
+      errorOccured = true;
+    }
 
-//   it("should fail to delete article with non-existing article id.", async () => {});
+    expect(errorOccured).toBeTruthy();
+  });
 
-//   it("should fail to mark article published for already published articles.", () => {});
+  it("should fail to check article for unrelated article id and email.", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await check_is_user_article(user_1.email, test_articles_2[0].id as number);
+    } catch (err) {
+      errorOccured = true;
+    }
 
-//   it("should fail to mark article public for already public articles.", async () => {});
+    expect(errorOccured).toBeTruthy();
+  });
 
-//   it("should return max of 50 public articles", async () => {});
-// });
+  it("should fail to update for non-existing article id.", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await update_article(1000, { title: "Updated" });
+    } catch (err) {
+      errorOccured = true;
+    }
+
+    expect(errorOccured).toBeTruthy();
+  });
+
+  it("should fail to delete article with non-existing article id.", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await delete_article(1000);
+    } catch (err) {
+      errorOccured = true;
+    }
+
+    expect(errorOccured).toBeTruthy();
+  });
+
+  it("should fail to mark article published for already published articles.", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await publish_article(test_articles_1[0].id as number);
+    } catch (err) {
+      errorOccured = true;
+    }
+
+    expect(errorOccured).toBeTruthy();
+  });
+
+  it("should fail to mark article public for already public articles.", async () => {
+    let errorOccured: boolean = false;
+    try {
+      await make_article_public(test_articles_1[0].id as number);
+    } catch (err) {
+      errorOccured = true;
+    }
+
+    expect(errorOccured).toBeTruthy();
+  });
+
+  it("should return max of 50 public articles", async () => {
+    const articles = await get_public_articles();
+
+    expect(articles.length).toBeDefined();
+    expect(articles.length).toBeLessThanOrEqual(50);
+  });
+});
