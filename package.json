@@ -7,7 +7,8 @@
     "start": "node dist/index.js",
     "dev": "nodemon",
     "watch": "tsc -w",
-    "build": "tsc"
+    "build": "tsc",
+    "test": "jest"
   },
   "dependencies": {
     "@types/joi": "^14.3.4",
@@ -16,7 +17,6 @@
     "express": "^4.17.1",
     "express-session": "^1.17.1",
     "joi": "^17.3.0",
-    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.28",
@@ -25,9 +25,14 @@
   "devDependencies": {
     "@types/express": "^4.17.8",
     "@types/express-session": "^1.17.2",
+    "@types/jest": "^26.0.8",
     "@types/morgan": "^1.9.2",
     "@types/winston": "^2.4.4",
-    "class-validator": "^0.12.2"
+    "class-validator": "^0.12.2",
+    "jest": "^26.6.3",
+    "sqlite3": "^5.0.0",
+    "ts-jest": "^26.4.4",
+    "typescript": "^4.1.2"
   },
   "keywords": [],
   "author": "Jayant Malik",

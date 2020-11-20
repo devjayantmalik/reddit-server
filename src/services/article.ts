@@ -2,6 +2,7 @@ import { getRepository } from "typeorm";
 import { ArticleEntity } from "../entities/Article";
 import { UserEntity } from "../entities/User";
 import { IArticle } from "../interfaces/IArticle";
+import { IUser } from "../interfaces/IUser";
 import { is_valid_article } from "../tools/validators/article";
 import {
   ArticleAlreadyPublicError,
@@ -15,8 +16,7 @@ export const check_article_exists = async (id: string): Promise<ArticleEntity | 
   return await getRepository(ArticleEntity).findOne(id);
 };
 
-// TODO: Add the user and article association.
-export const add_article = async (article: IArticle, user: UserEntity): Promise<ArticleEntity> => {
+export const add_article = async (article: IArticle, user: IUser): Promise<ArticleEntity> => {
   const { error: invalidArticleError, value: validArticle } = is_valid_article(article);
   if (invalidArticleError) {
     throw invalidArticleError;
@@ -25,7 +25,6 @@ export const add_article = async (article: IArticle, user: UserEntity): Promise<
   return await getRepository(ArticleEntity).save({ ...(validArticle as IArticle), user: user });
 };
 
-// TODO: Make sure to implement this function. It checks if the article belongs to a user with provided email.
 export const check_is_user_article = async (email: string, articleId: string): Promise<boolean> => {
   const user = await getRepository(UserEntity).findOne({ where: { email }, relations: ["articles"] });
 
@@ -92,7 +91,7 @@ export const make_article_public = async (articleId: string) => {
   return { ...existingArticle, isPublic: true };
 };
 
-export const get_public_articles = async (cursor: string, limit: number): Promise<ArticleEntity[]> => {
+export const get_public_articles = async (cursor?: string, limit?: number): Promise<ArticleEntity[]> => {
   limit = Math.min(50, Number(limit)) || 50;
   const results = await getRepository(ArticleEntity)
     .createQueryBuilder()

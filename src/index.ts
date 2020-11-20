@@ -1,16 +1,16 @@
+import { ApolloServer } from "apollo-server-express";
+import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
+import cors from "cors";
 import express from "express";
+import session from "express-session";
+import { buildSchema } from "type-graphql";
 import { __port__, __prod__, __session_secret__ } from "./constants";
 import { connectDb } from "./db";
+import { ArticleResolver } from "./graphql/resolvers/article";
+import { UserResolver } from "./graphql/resolvers/user";
+import { IUser } from "./interfaces/IUser";
 import ormconfig from "./ormconfig";
 import { logger } from "./tools/logger";
-import cors from "cors";
-import session from "express-session";
-import { ApolloServer } from "apollo-server-express";
-import { buildSchema } from "type-graphql";
-import { UserResolver } from "./graphql/resolvers/user";
-import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
-import { IUser } from "./interfaces/IUser";
-import { ArticleResolver } from "./graphql/resolvers/article";
 
 const main = async () => {
   await connectDb(ormconfig);
