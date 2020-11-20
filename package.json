@@ -18,6 +18,7 @@
     "express-session": "^1.17.1",
     "joi": "^17.3.0",
     "mysql": "^2.18.1",
+    "nodemailer": "^6.4.16",
     "type-graphql": "^1.1.1",
     "typeorm": "^0.2.28",
     "winston": "^3.3.3"
@@ -27,6 +28,7 @@
     "@types/express-session": "^1.17.2",
     "@types/jest": "^26.0.8",
     "@types/morgan": "^1.9.2",
+    "@types/nodemailer": "^6.4.0",
     "@types/winston": "^2.4.4",
     "class-validator": "^0.12.2",
     "jest": "^26.6.3",
