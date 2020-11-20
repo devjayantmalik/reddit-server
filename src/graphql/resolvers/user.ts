@@ -1,8 +1,12 @@
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
 import { Arg, Ctx, Mutation, Query } from "type-graphql";
 import { check_user_exists, reset_password, signin_user, signup_user } from "../../services/user";
+import { send_reset_password_email } from "../../tools/mailer";
 import { SignupInput } from "../inputs/SignupInput";
 import { AuthResponse } from "../responses/AuthResponse";
+import { randomBytes } from "crypto";
+import { is_valid_email } from "../../tools/validators/user";
+import { InvalidUserDetailsError, INVALID_USER_DETAILS } from "../../utils/errors";
 
 export class UserResolver {
   @Query(() => AuthResponse)
@@ -55,18 +59,35 @@ export class UserResolver {
   // But for development purposes, it is okay for some time, till we
   // implement the functionality.
   @Mutation(() => AuthResponse)
-  async forgot_password(
+  async sendForgotPasswordEmail(
     @Arg("email") email: string,
-    @Arg("newPassword") newPassword: string,
-    @Ctx() { req, res }: ExpressContext
+    @Arg("newPassword") newPassword: string
+    // @Ctx() { req, res }: ExpressContext
   ): Promise<AuthResponse> {
     try {
+      if (!is_valid_email(email)) throw InvalidUserDetailsError("Invalid Email provided.");
+
+      const code: string = randomBytes(5).toString("hex").toUpperCase();
+      const response = send_reset_password_email(code, email);
+
+      // TODO: Store the passcode somewhere in session.
+
       await reset_password(email, newPassword);
-      // destory the session for the current user.
-      req.session.destroy((err) => {
-        if (err) throw err;
-      });
-      res.clearCookie("qid");
+    } catch (err) {
+      return { error: err.message };
+    }
+  }
+
+  @Mutation(() => AuthResponse)
+  async verifyForgotPasswordCode(): // @Arg("code") code: string,
+  // @Ctx() { req, res }: ExpressContext
+  Promise<AuthResponse> {
+    try {
+      // TODO: Reset the Password for the user.
+
+      // await reset_password(email, newPassword);
+
+      // TODO: Return user instead of undefined.
       return { data: undefined };
     } catch (err) {
       return { error: err.message };
