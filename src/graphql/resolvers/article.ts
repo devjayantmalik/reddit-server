@@ -7,13 +7,12 @@ import {
   check_article_exists,
   delete_article,
   get_public_articles,
-  get_user_articles,
   make_article_public,
   publish_article,
   update_article
 } from "../../services/article";
-import { get_comments_by_article } from "../../services/comment";
-import { check_user_exists } from "../../services/user";
+// import { check_user_exists } from "../../services/auth";
+import { get_article_comments } from "../../services/comment";
 import { ArticleDoesNotExistError, InvalidCredentialsError } from "../../utils/errors";
 import { ArticleInput, ArticleUpdateInput } from "../inputs/ArticleInput";
 import { attachCurrentUser } from "../middlewares/attachCurrentUser";
@@ -22,22 +21,14 @@ import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { ArticleResponse } from "../responses/ArticleResponse";
 import { ArticlesResponse } from "../responses/ArticlesResponse";
 
-/**
- * Route: /article : Returns a specific article with provided id. Supports both authenticated user and public article.
- * Route: /userArticles: Returns articles for logged in user.
- * Route: /publicArticles: Returns articles for logged in user.
- * Route: /addArticle: Adds a new article (Authentication Required)
- * Route: /updateArticle: Updates an existing article (Authentication Required)
- * Route: /deleteArticle: Deletes an article (Authentication Required)
- */
-
 @Resolver(ArticleEntity)
 export class ArticleResolver {
   @FieldResolver(() => [CommentEntity])
   @Query(() => [CommentEntity])
   async comments(@Root() art: ArticleEntity): Promise<CommentEntity[]> {
-    return await get_comments_by_article(art.id as Number);
+    return await get_article_comments(art.id as Number);
   }
+
   @Query(() => ArticleResponse)
   async article(@Arg("id", () => ID) id: string, @Ctx() { req }: ExpressContext): Promise<ArticleResponse> {
     try {
@@ -51,8 +42,6 @@ export class ArticleResolver {
       if (!req.session.email) {
         throw InvalidCredentialsError();
       }
-      const user = await check_user_exists(req.session.email);
-      if (!user) throw InvalidCredentialsError();
 
       return { data: article };
     } catch (err) {
@@ -68,17 +57,6 @@ export class ArticleResolver {
     try {
       const articles = await get_public_articles(cursor, limit);
       return { data: articles };
-    } catch (err) {
-      return { error: err.message };
-    }
-  }
-
-  @UseMiddleware(isAuthenticated, attachCurrentUser)
-  @Query(() => ArticlesResponse)
-  async userArticles(@Ctx() { req }: ExpressContext): Promise<ArticlesResponse> {
-    try {
-      const results = await get_user_articles((req as any).session.user.id as Number);
-      return { data: results };
     } catch (err) {
       return { error: err.message };
     }
