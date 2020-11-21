@@ -6,7 +6,9 @@ import { SignupInput } from "../inputs/SignupInput";
 import { AuthResponse } from "../responses/AuthResponse";
 import { randomBytes } from "crypto";
 import { is_valid_email } from "../../tools/validators/user";
-import { InvalidUserDetailsError, INVALID_USER_DETAILS } from "../../utils/errors";
+import { InvalidOneTimePasscodeError, InvalidUserDetailsError, UserDoesNotExistError } from "../../utils/errors";
+import { IRequestContext } from "../../types";
+import { REDIS_FORGOT_PASSWORD_PREFIX } from "../../constants";
 
 export class UserResolver {
   @Query(() => AuthResponse)
@@ -55,40 +57,39 @@ export class UserResolver {
     }
   }
 
-  // TODO: Send user authentication token before changing the password,
-  // But for development purposes, it is okay for some time, till we
-  // implement the functionality.
   @Mutation(() => AuthResponse)
-  async sendForgotPasswordEmail(
-    @Arg("email") email: string,
-    @Arg("newPassword") newPassword: string
-    // @Ctx() { req, res }: ExpressContext
-  ): Promise<AuthResponse> {
+  async sendForgotPasswordEmail(@Arg("email") email: string, @Ctx() { redis }: IRequestContext): Promise<AuthResponse> {
     try {
       if (!is_valid_email(email)) throw InvalidUserDetailsError("Invalid Email provided.");
 
+      const user = await check_user_exists(email);
+      if (!user) throw UserDoesNotExistError();
+
       const code: string = randomBytes(5).toString("hex").toUpperCase();
-      const response = send_reset_password_email(code, email);
+      await send_reset_password_email(code, email);
 
-      // TODO: Store the passcode somewhere in session.
+      // Store the passcode in redis.
+      await redis.set(`${REDIS_FORGOT_PASSWORD_PREFIX}${code}`, email);
 
-      await reset_password(email, newPassword);
+      return {};
     } catch (err) {
       return { error: err.message };
     }
   }
 
   @Mutation(() => AuthResponse)
-  async verifyForgotPasswordCode(): // @Arg("code") code: string,
-  // @Ctx() { req, res }: ExpressContext
-  Promise<AuthResponse> {
+  async verifyForgotPasswordCode(
+    @Arg("code") code: string,
+    @Arg("newPassword") newPassword: string,
+    @Ctx() { redis }: IRequestContext
+  ): Promise<AuthResponse> {
     try {
-      // TODO: Reset the Password for the user.
+      const email = await redis.get(`${REDIS_FORGOT_PASSWORD_PREFIX}${code}`);
+      if (!email || !is_valid_email(email)) throw InvalidOneTimePasscodeError();
 
-      // await reset_password(email, newPassword);
+      await reset_password(email, newPassword);
 
-      // TODO: Return user instead of undefined.
-      return { data: undefined };
+      return {};
     } catch (err) {
       return { error: err.message };
     }
