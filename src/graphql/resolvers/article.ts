@@ -23,6 +23,7 @@ import { ArticlesResponse } from "../responses/ArticlesResponse";
 /**
  * Route: /article : Returns a specific article with provided id. Supports both authenticated user and public article.
  * Route: /userArticles: Returns articles for logged in user.
+ * Route: /publicArticles: Returns articles for logged in user.
  * Route: /addArticle: Adds a new article (Authentication Required)
  * Route: /updateArticle: Updates an existing article (Authentication Required)
  * Route: /deleteArticle: Deletes an article (Authentication Required)
