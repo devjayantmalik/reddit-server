@@ -9,6 +9,8 @@ export const NO_ARTICLES_FOUND = "NoArticlesFound";
 export const MIDDLEWARE_ERROR = "MiddlewareError";
 export const ARTICLE_ALREADY_PUBLIC = "ArticleAlreadyPublic";
 export const ARTICLE_ALREADY_PUBLISHED = "ArticleAlreadyPublished";
+export const USER_DOES_NOT_EXIST = "UserDoesNotExist";
+export const INVALID_PASSCODE_ERROR = "InvalidOneTimePasscode";
 
 export class CustomError extends Error implements ICustomError {
   name: string = "ServerError";
@@ -55,3 +57,9 @@ export const ArticleAlreadyPublicError = (): CustomError =>
 
 export const ArticleAlreadyPublishedError = (): CustomError =>
   new CustomError(ARTICLE_ALREADY_PUBLISHED, "Article is already published.");
+
+export const UserDoesNotExistError = (): CustomError =>
+  new CustomError(USER_DOES_NOT_EXIST, "User with provided credentials doesn't exist.");
+
+export const InvalidOneTimePasscodeError = (): CustomError =>
+  new CustomError(INVALID_PASSCODE_ERROR, "Your entered an invalid One Time Passcode.");

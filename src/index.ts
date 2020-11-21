@@ -1,23 +1,29 @@
 import { ApolloServer } from "apollo-server-express";
-import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
 import cors from "cors";
 import express from "express";
 import session from "express-session";
 import { buildSchema } from "type-graphql";
-import { __port__, __prod__, __session_secret__ } from "./constants";
+import { REDIS_URL, __port__, __prod__, __session_secret__ } from "./constants";
 import { connectDb } from "./db";
 import { ArticleResolver } from "./graphql/resolvers/article";
 import { UserResolver } from "./graphql/resolvers/user";
 import { IUser } from "./interfaces/IUser";
 import ormconfig from "./ormconfig";
 import { logger } from "./tools/logger";
-
+import Redis from "ioredis";
+import connectRedis from "connect-redis";
+import { IRequestContext } from "./types";
 const main = async () => {
   await connectDb(ormconfig);
 
   const app = express();
+
+  const RedisStore = connectRedis(session);
+  const redisClient = new Redis(REDIS_URL);
+
   app.use(
     session({
+      store: new RedisStore({ client: redisClient }),
       secret: __session_secret__,
       saveUninitialized: false,
       resave: false,
@@ -37,7 +43,7 @@ const main = async () => {
       resolvers: [UserResolver, ArticleResolver],
       validate: false
     }),
-    context: ({ req, res }): ExpressContext => ({ req, res })
+    context: ({ req, res }): IRequestContext => ({ req, res, redis: redisClient })
   });
 
   apolloServer.applyMiddleware({ app, cors: false });
