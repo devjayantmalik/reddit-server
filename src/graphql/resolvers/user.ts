@@ -94,4 +94,16 @@ export class UserResolver {
       return { error: err.message };
     }
   }
+
+  @Query(() => Boolean)
+  async signout(@Ctx() { req, res }: ExpressContext): Promise<boolean> {
+    return new Promise((resolve, _reject) => {
+      req.session.destroy((err) => {
+        if (err) return resolve(false);
+      });
+
+      res.clearCookie("qid");
+      return resolve(true);
+    });
+  }
 }
