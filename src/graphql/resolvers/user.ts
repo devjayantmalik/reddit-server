@@ -1,14 +1,14 @@
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
+import { randomBytes } from "crypto";
 import { Arg, Ctx, Mutation, Query } from "type-graphql";
+import { REDIS_FORGOT_PASSWORD_PREFIX } from "../../constants";
 import { check_user_exists, reset_password, signin_user, signup_user } from "../../services/user";
 import { send_reset_password_email } from "../../tools/mailer";
+import { is_valid_email } from "../../tools/validators/user";
+import { IRequestContext } from "../../types";
+import { InvalidOneTimePasscodeError, InvalidUserDetailsError, UserDoesNotExistError } from "../../utils/errors";
 import { SignupInput } from "../inputs/SignupInput";
 import { AuthResponse } from "../responses/AuthResponse";
-import { randomBytes } from "crypto";
-import { is_valid_email } from "../../tools/validators/user";
-import { InvalidOneTimePasscodeError, InvalidUserDetailsError, UserDoesNotExistError } from "../../utils/errors";
-import { IRequestContext } from "../../types";
-import { REDIS_FORGOT_PASSWORD_PREFIX } from "../../constants";
 
 export class UserResolver {
   @Query(() => AuthResponse)

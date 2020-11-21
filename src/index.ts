@@ -13,6 +13,7 @@ import { logger } from "./tools/logger";
 import Redis from "ioredis";
 import connectRedis from "connect-redis";
 import { IRequestContext } from "./types";
+import { IIPInfo, ip_middleware } from "./tools/ipfinder";
 const main = async () => {
   await connectDb(ormconfig);
 
@@ -37,6 +38,7 @@ const main = async () => {
     })
   );
   app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+  app.use(ip_middleware);
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
@@ -67,5 +69,13 @@ declare module "express-session" {
   export interface Session {
     email?: string;
     user?: IUser;
+  }
+}
+
+declare global {
+  namespace Express {
+    interface Request {
+      ip_address?: IIPInfo;
+    }
   }
 }

@@ -11,6 +11,8 @@ export const ARTICLE_ALREADY_PUBLIC = "ArticleAlreadyPublic";
 export const ARTICLE_ALREADY_PUBLISHED = "ArticleAlreadyPublished";
 export const USER_DOES_NOT_EXIST = "UserDoesNotExist";
 export const INVALID_PASSCODE_ERROR = "InvalidOneTimePasscode";
+export const EMAIL_SERVICE_ERROR = "EmailServiceError";
+export const MAX_LIMIT_EXCEEDED = "MaxLimitExceeded";
 
 export class CustomError extends Error implements ICustomError {
   name: string = "ServerError";
@@ -63,3 +65,9 @@ export const UserDoesNotExistError = (): CustomError =>
 
 export const InvalidOneTimePasscodeError = (): CustomError =>
   new CustomError(INVALID_PASSCODE_ERROR, "Your entered an invalid One Time Passcode.");
+
+export const EmailServiceError = (message?: string): CustomError =>
+  new CustomError(EMAIL_SERVICE_ERROR, message || "Something went wrong, while sending email.");
+
+export const MaxRetryLimitExceeded = (message?: string): CustomError =>
+  new CustomError(MAX_LIMIT_EXCEEDED, message || "Please try again 5 minutes.");
