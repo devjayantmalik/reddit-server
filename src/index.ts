@@ -9,6 +9,8 @@ import { REDIS_URL, __port__, __prod__, __session_secret__ } from "./constants";
 import { connectDb } from "./db";
 import { UserEntity } from "./entities/User";
 import { ArticleResolver } from "./graphql/resolvers/article";
+import { AuthResolver } from "./graphql/resolvers/auth";
+import { CommentResolver } from "./graphql/resolvers/comment";
 import { UserResolver } from "./graphql/resolvers/user";
 import ormconfig from "./ormconfig";
 import { logger } from "./tools/logger";
@@ -40,7 +42,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, ArticleResolver],
+      resolvers: [AuthResolver, UserResolver, ArticleResolver, CommentResolver],
       validate: false
     }),
     context: ({ req, res }): IRequestContext => ({ req, res, redis: redisClient })

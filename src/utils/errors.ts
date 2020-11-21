@@ -32,10 +32,11 @@ export const InvalidCredentialsError = (message?: string): CustomError =>
     message || "It seems like you provided us invalid credentials. Please check your email and password."
   );
 
-export const DuplicateAccountError = (): CustomError =>
+export const DuplicateAccountError = (message?: string): CustomError =>
   new CustomError(
     DUPLICATE_ACCOUNT,
-    "Dear user account with provided email already exist. You can try to reset your password, in case you forgot it."
+    message ||
+      "Dear user account with provided email already exist. You can try to reset your password, in case you forgot it."
   );
 
 export const InvalidUserDetailsError = (message: string): CustomError => new CustomError(INVALID_USER_DETAILS, message);
@@ -43,14 +44,15 @@ export const InvalidUserDetailsError = (message: string): CustomError => new Cus
 export const InvalidArticleDetailsError = (message: string): CustomError =>
   new CustomError(INVALID_ARTICLE_DETAILS, message);
 
-export const ArticleDoesNotExistError = (): CustomError =>
+export const ArticleDoesNotExistError = (message?: string): CustomError =>
   new CustomError(
     ARTICLE_DOES_NOT_EXISTS,
-    "Your requested article is missing on our servers. You might have provided invalid details, or it was deleted for some reasons."
+    message ||
+      "Your requested article is missing on our servers. You might have provided invalid details, or it was deleted for some reasons."
   );
 
-export const NoArticlesFoundError = (): CustomError =>
-  new CustomError(NO_ARTICLES_FOUND, "No articles found. Please create a new article to see the results.");
+export const NoArticlesFoundError = (message?: string): CustomError =>
+  new CustomError(NO_ARTICLES_FOUND, message || "No articles found. Please create a new article to see the results.");
 
 export const MiddlewareError = (message: string): CustomError => new CustomError(MIDDLEWARE_ERROR, message);
 
@@ -60,11 +62,11 @@ export const ArticleAlreadyPublicError = (): CustomError =>
 export const ArticleAlreadyPublishedError = (): CustomError =>
   new CustomError(ARTICLE_ALREADY_PUBLISHED, "Article is already published.");
 
-export const UserDoesNotExistError = (): CustomError =>
-  new CustomError(USER_DOES_NOT_EXIST, "User with provided credentials doesn't exist.");
+export const UserDoesNotExistError = (message?: string): CustomError =>
+  new CustomError(USER_DOES_NOT_EXIST, message || "User with provided credentials doesn't exist.");
 
-export const InvalidOneTimePasscodeError = (): CustomError =>
-  new CustomError(INVALID_PASSCODE_ERROR, "Your entered an invalid One Time Passcode.");
+export const InvalidOneTimePasscodeError = (message?: string): CustomError =>
+  new CustomError(INVALID_PASSCODE_ERROR, message || "Your entered an invalid One Time Passcode.");
 
 export const EmailServiceError = (message?: string): CustomError =>
   new CustomError(EMAIL_SERVICE_ERROR, message || "Something went wrong, while sending email.");
