@@ -1,6 +1,7 @@
 import { Field, Int, ObjectType } from "type-graphql";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ArticleEntity } from "./Article";
+import { CommentEntity } from "./Comment";
 
 @ObjectType()
 @Entity("users")
@@ -24,8 +25,13 @@ export class UserEntity {
   @Column({ type: "text" })
   password!: string;
 
+  // One User can have many articles.
   @OneToMany(() => ArticleEntity, (art) => art.user)
   articles?: ArticleEntity[];
+
+  // One user can have many comments
+  @OneToMany(() => CommentEntity, (cmt) => cmt.user)
+  comments?: CommentEntity[];
 
   @Field(() => String)
   @CreateDateColumn()
