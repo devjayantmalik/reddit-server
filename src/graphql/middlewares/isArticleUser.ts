@@ -20,7 +20,10 @@ export const isArticleUser: MiddlewareFn = async ({ args, context }, next): Prom
 
     const isValid = await check_is_user_article(req.session.email as string, args.id);
 
-    if (!isValid) throw InvalidCredentialsError();
+    if (!isValid)
+      throw InvalidCredentialsError(
+        "You are not the owner of this article, so we can't allow you access to this article."
+      );
 
     return next();
   } catch (err) {

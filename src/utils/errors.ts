@@ -26,10 +26,10 @@ export class CustomError extends Error implements ICustomError {
   }
 }
 
-export const InvalidCredentialsError = (): CustomError =>
+export const InvalidCredentialsError = (message?: string): CustomError =>
   new CustomError(
     INVALID_CREDENTIALS,
-    "It seems like you provided us invalid credentials. Please check your email and password."
+    message || "It seems like you provided us invalid credentials. Please check your email and password."
   );
 
 export const DuplicateAccountError = (): CustomError =>
