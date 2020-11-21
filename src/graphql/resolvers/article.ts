@@ -1,6 +1,7 @@
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
-import { Arg, Ctx, ID, Int, Mutation, Query, UseMiddleware } from "type-graphql";
-import { UserEntity } from "../../entities/User";
+import { Arg, Ctx, FieldResolver, ID, Int, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { ArticleEntity } from "../../entities/Article";
+import { CommentEntity } from "../../entities/Comment";
 import {
   add_article,
   check_article_exists,
@@ -11,6 +12,7 @@ import {
   publish_article,
   update_article
 } from "../../services/article";
+import { get_comments_by_article } from "../../services/comment";
 import { check_user_exists } from "../../services/user";
 import { ArticleDoesNotExistError, InvalidCredentialsError } from "../../utils/errors";
 import { ArticleInput, ArticleUpdateInput } from "../inputs/ArticleInput";
@@ -29,7 +31,13 @@ import { ArticlesResponse } from "../responses/ArticlesResponse";
  * Route: /deleteArticle: Deletes an article (Authentication Required)
  */
 
+@Resolver(ArticleEntity)
 export class ArticleResolver {
+  @FieldResolver(() => [CommentEntity])
+  @Query(() => [CommentEntity])
+  async comments(@Root() art: ArticleEntity): Promise<CommentEntity[]> {
+    return await get_comments_by_article(art.id as Number);
+  }
   @Query(() => ArticleResponse)
   async article(@Arg("id", () => ID) id: string, @Ctx() { req }: ExpressContext): Promise<ArticleResponse> {
     try {
@@ -69,7 +77,7 @@ export class ArticleResolver {
   @Query(() => ArticlesResponse)
   async userArticles(@Ctx() { req }: ExpressContext): Promise<ArticlesResponse> {
     try {
-      const results = await get_user_articles(req.session.user as UserEntity);
+      const results = await get_user_articles((req as any).session.user.id as Number);
       return { data: results };
     } catch (err) {
       return { error: err.message };
@@ -80,7 +88,7 @@ export class ArticleResolver {
   @Mutation(() => ArticleResponse)
   async addArticle(@Arg("article") article: ArticleInput, @Ctx() { req }: ExpressContext): Promise<ArticleResponse> {
     try {
-      const newArticle = await add_article(article, req.session.user as UserEntity);
+      const newArticle = await add_article(article, req.session.user!);
       return { data: newArticle };
     } catch (err) {
       return { error: err.message };

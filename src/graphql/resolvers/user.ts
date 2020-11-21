@@ -1,7 +1,10 @@
 import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
 import { randomBytes } from "crypto";
-import { Arg, Ctx, Mutation, Query } from "type-graphql";
+import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from "type-graphql";
 import { REDIS_FORGOT_PASSWORD_PREFIX } from "../../constants";
+import { ArticleEntity } from "../../entities/Article";
+import { UserEntity } from "../../entities/User";
+import { get_user_articles } from "../../services/article";
 import { check_user_exists, reset_password, signin_user, signup_user } from "../../services/user";
 import { send_reset_password_email } from "../../tools/mailer";
 import { is_valid_email } from "../../tools/validators/user";
@@ -10,7 +13,14 @@ import { InvalidOneTimePasscodeError, InvalidUserDetailsError, UserDoesNotExistE
 import { SignupInput } from "../inputs/SignupInput";
 import { AuthResponse } from "../responses/AuthResponse";
 
+@Resolver(UserEntity)
 export class UserResolver {
+  @FieldResolver()
+  @Query(() => [ArticleEntity])
+  async articles(@Root() user: UserEntity): Promise<ArticleEntity[]> {
+    return await get_user_articles(user.id as Number);
+  }
+
   @Query(() => AuthResponse)
   async me(@Ctx() { req }: ExpressContext): Promise<AuthResponse> {
     try {

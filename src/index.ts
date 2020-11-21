@@ -1,17 +1,17 @@
 import { ApolloServer } from "apollo-server-express";
+import connectRedis from "connect-redis";
 import cors from "cors";
 import express from "express";
 import session from "express-session";
+import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { REDIS_URL, __port__, __prod__, __session_secret__ } from "./constants";
 import { connectDb } from "./db";
+import { UserEntity } from "./entities/User";
 import { ArticleResolver } from "./graphql/resolvers/article";
 import { UserResolver } from "./graphql/resolvers/user";
-import { IUser } from "./interfaces/IUser";
 import ormconfig from "./ormconfig";
 import { logger } from "./tools/logger";
-import Redis from "ioredis";
-import connectRedis from "connect-redis";
 import { IRequestContext } from "./types";
 const main = async () => {
   await connectDb(ormconfig);
@@ -66,6 +66,6 @@ main().catch((err) => {
 declare module "express-session" {
   export interface Session {
     email?: string;
-    user?: IUser;
+    user?: UserEntity;
   }
 }

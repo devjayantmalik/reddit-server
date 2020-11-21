@@ -12,7 +12,7 @@ export const attachCurrentUser: MiddlewareFn = async ({ context }, next): Promis
     const user = await check_user_exists(req.session.email as string);
     if (!user) throw InvalidCredentialsError();
 
-    req.session.user = user;
+    req.session.user! = user;
     return next();
   } catch (err) {
     return { error: err.message };

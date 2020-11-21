@@ -1,10 +1,8 @@
-import { CONTAINS } from "class-validator";
 import { Field, Int, ObjectType } from "type-graphql";
 import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -29,10 +27,12 @@ export class ArticleEntity {
   markdown!: string;
 
   // Many articles can belong to one user.
+  @Field(() => UserEntity)
   @ManyToOne(() => UserEntity, (usr) => usr.articles, { cascade: true })
   user?: UserEntity;
 
   // One article could have many comments.
+  @Field(() => [CommentEntity])
   @OneToMany(() => CommentEntity, (cmt) => cmt.article, { cascade: true })
   comments?: CommentEntity[];
 

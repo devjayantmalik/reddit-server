@@ -1,14 +1,5 @@
 import { Field, ObjectType } from "type-graphql";
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  ManyToOne,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { ArticleEntity } from "./Article";
 import { UserEntity } from "./User";
 
@@ -20,10 +11,12 @@ export class CommentEntity {
   id?: number;
 
   // Many Comments can belong to one article.
+  @Field(() => ArticleEntity)
   @ManyToOne(() => ArticleEntity, (art) => art.comments)
   article?: ArticleEntity;
 
   // Many Comments can belong to one user.
+  @Field(() => UserEntity)
   @ManyToOne(() => UserEntity, (usr) => usr.comments)
   user?: UserEntity;
 

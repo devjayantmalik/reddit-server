@@ -2,7 +2,6 @@ import { getRepository } from "typeorm";
 import { ArticleEntity } from "../entities/Article";
 import { UserEntity } from "../entities/User";
 import { IArticle } from "../interfaces/IArticle";
-import { IUser } from "../interfaces/IUser";
 import { is_valid_article } from "../tools/validators/article";
 import {
   ArticleAlreadyPublicError,
@@ -16,7 +15,7 @@ export const check_article_exists = async (id: string | number): Promise<Article
   return await getRepository(ArticleEntity).findOne(id);
 };
 
-export const add_article = async (article: IArticle, user: IUser): Promise<ArticleEntity> => {
+export const add_article = async (article: IArticle, user: UserEntity): Promise<ArticleEntity> => {
   const { error: invalidArticleError, value: validArticle } = is_valid_article(article);
   if (invalidArticleError) {
     throw invalidArticleError;
@@ -61,12 +60,10 @@ export const delete_article = async (id: string | number): Promise<ArticleEntity
   return existingArticle;
 };
 
-export const get_user_articles = async (user: UserEntity) => {
-  const articles = await getRepository(ArticleEntity).find({ where: { user } });
-  if (!articles.length) {
-    throw NoArticlesFoundError();
-  }
-  return articles;
+export const get_user_articles = async (userId: string | Number) => {
+  const user = await getRepository(UserEntity).findOne({ where: { id: userId }, relations: ["articles"] });
+
+  return user?.articles || [];
 };
 
 export const publish_article = async (articleId: string | number): Promise<ArticleEntity> => {

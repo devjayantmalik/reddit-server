@@ -26,10 +26,12 @@ export class UserEntity {
   password!: string;
 
   // One User can have many articles.
+  @Field(() => [ArticleEntity])
   @OneToMany(() => ArticleEntity, (art) => art.user)
   articles?: ArticleEntity[];
 
   // One user can have many comments
+  @Field(() => [CommentEntity])
   @OneToMany(() => CommentEntity, (cmt) => cmt.user)
   comments?: CommentEntity[];
 

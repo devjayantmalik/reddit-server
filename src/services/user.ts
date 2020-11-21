@@ -1,7 +1,6 @@
 import argon2 from "argon2";
 import { getRepository } from "typeorm";
 import { UserEntity } from "../entities/User";
-import { IUser } from "../interfaces/IUser";
 import { logger } from "../tools/logger";
 import { is_valid_email, is_valid_password, is_valid_user } from "../tools/validators/user";
 import { DuplicateAccountError, InvalidCredentialsError, InvalidUserDetailsError } from "../utils/errors";
@@ -49,7 +48,7 @@ export const signup_user = async (user: UserEntity): Promise<UserEntity> => {
 
   const hashedPassword = await argon2.hash(user.password);
   const newUser = await getRepository(UserEntity).create({
-    ...(validUser as IUser),
+    ...(validUser as UserEntity),
     password: hashedPassword
   });
 
