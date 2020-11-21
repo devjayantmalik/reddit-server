@@ -2,7 +2,7 @@ import { ExpressContext } from "apollo-server-express/dist/ApolloServer";
 import { randomBytes } from "crypto";
 import { Arg, Ctx, Mutation, Query } from "type-graphql";
 import { REDIS_FORGOT_PASSWORD_PREFIX } from "../../constants";
-import { check_user_exists, reset_password, signin_user, signup_user } from "../../services/user";
+import { check_user_exists, reset_password, signin_user, signup_user } from "../../services/auth";
 import { send_reset_password_email } from "../../tools/mailer";
 import { is_valid_email } from "../../tools/validators/user";
 import { IRequestContext } from "../../types";
