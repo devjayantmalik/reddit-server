@@ -11,12 +11,10 @@ export class CommentEntity {
   id?: number;
 
   // Many Comments can belong to one article.
-  @Field(() => ArticleEntity)
   @ManyToOne(() => ArticleEntity, (art) => art.comments)
   article?: ArticleEntity;
 
   // Many Comments can belong to one user.
-  @Field(() => UserEntity)
   @ManyToOne(() => UserEntity, (usr) => usr.comments)
   user?: UserEntity;
 
