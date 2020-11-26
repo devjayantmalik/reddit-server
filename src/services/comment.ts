@@ -1,4 +1,4 @@
-import { DeepPartial, getRepository } from "typeorm";
+import { getRepository } from "typeorm";
 import { ArticleEntity } from "../entities/Article";
 import { CommentEntity } from "../entities/Comment";
 import { UserEntity } from "../entities/User";

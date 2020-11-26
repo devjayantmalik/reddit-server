@@ -28,9 +28,9 @@ export class CommentResolver {
     }
   }
 
-  @Mutation()
+  @Mutation(() => CommentResponse)
   async updateComment() {}
 
-  @Mutation()
+  @Mutation(() => CommentResponse)
   async deleteComment() {}
 }
