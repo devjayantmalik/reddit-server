@@ -1,4 +1,5 @@
 import { ConnectionOptions } from "typeorm";
+import { __prod__ } from "./constants";
 
 export default {
   type: "mysql",
@@ -6,6 +7,6 @@ export default {
   username: "test",
   password: "password",
   synchronize: true,
-  logging: true,
+  logging: !__prod__,
   entities: [__dirname + "/entities/*"]
 } as ConnectionOptions;

@@ -25,11 +25,7 @@ import { ArticlesResponse } from "../responses/ArticlesResponse";
 export class ArticleResolver {
   @FieldResolver(() => [CommentEntity])
   @Query(() => [CommentEntity])
-  async comments(
-    @Root() art: ArticleEntity,
-    @Arg("cursor", () => Int, { nullable: true }) cursor: number,
-    @Arg("limit", () => Int, { nullable: true }) limit: number
-  ): Promise<CommentEntity[]> {
+  async comments(@Root() art: ArticleEntity): Promise<CommentEntity[]> {
     const results = await get_article_comments(art.id as Number);
     return results;
   }
